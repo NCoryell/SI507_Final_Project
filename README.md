@@ -73,7 +73,7 @@ NOTE: Need not have 3 steps, but should have as many as are appropriate!
 - Final_Project
   - SI507final_project.py
   - SI507project_tools.py
-  - SI507project_tests.py
+  - test.py
 
   - README.md
   - requirements.txt
