@@ -4,9 +4,10 @@ import os
 from flask import Flask, render_template, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
-#Functions to gather and cache data from the 343 Industries API
+season_dict = {}
+
 CACHE_FNAME = "Season_0_Team_Arena_cached_data.json"
-def get_halo_info():
+def get_player_info():
     baseurl = "https://www.haloapi.com/stats/h5/player-leaderboards/csr/2041d318-dd22-47c2-a487-2818ecf14e41/c98949ae-60a8-43dc-85d7-0feb0b92e719"
     params_diction = {}
     headers = {}
@@ -19,107 +20,130 @@ def get_halo_info():
     fw.close()
     return python_obj
 
+def load_season_data(input):
+    with open(input, 'r') as f:
+        season_metadata = json.load(f)
+    for item in season_metadata:
+        season = get_or_create_season(item['name'], item['id'], item['startDate'], item['endDate'])
+        season_dict[item['id']] = season
+
+def load_player_data(input):
+    with open(input, 'r') as f:
+        player_data = json.load(f)
+    playlist_id = player_data['Links']['Self']['Path'][28:64]
+    for item in player_data['Results']:
+        player = get_or_create_players(item['Player']['Gamertag'], item['Score']['Tier'], item['Score']['Csr'], item['Score']['Rank'], playlist_id)
+
 app = Flask(__name__)
 app.debug = True
 app.use_reloader = True
 app.config['SECRET_KEY'] = 'hard to guess string for app security adgsdfsadfdflsdfsj'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./Halo5_sample.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./Halo5_seasons.db'
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 session = db.session
 
-collections = db.Table('collections',
-    db.Column('player_id', db.String(64), db.ForeignKey('players.id'), primary_key=True),
-   db.Column('playlist_id', db.String(64), db.ForeignKey('playlists.id'), primary_key=True)
-   )
+leaderboard = db.Table('leaderboard',db.Column('season_id',db.String(64), db.ForeignKey('seasons.season_id')),db.Column('player_id',db.Integer, db.ForeignKey('players.id')))
 
 class Arena_Season(db.Model):
    __tablename__ = "seasons"
-   name = db.Column(db.String(64), primary_key=True)
-   season_id = db.Column(db.String(64))
+   name = db.Column(db.String(64))
+   season_id = db.Column(db.String(64), primary_key=True)
    start_date = db.Column(db.String(64))
    end_date = db.Column(db.String(64))
-   playlist_id = db.Column(db.Integer, db.ForeignKey("playlists.id"))
-   playlists = db.relationship("Playlist", backref='seasons')
-
-#Change relationship between two tables to many to many
-class Playlist(db.Model):
-   __tablename__ = "playlists"
-   id = db.Column(db.String(64), primary_key=True)
-   name = db.Column(db.String(64))
-   description = db.Column(db.String(64))
-   game_mode = db.Column(db.String(64))
-   seasons = db.Column(db.String(64), db.ForeignKey('seasons.name'))
+   players = db.relationship('Player', secondary=leaderboard,backref=db.backref('seasons',lazy='dynamic'),lazy='dynamic')
 
 class Player(db.Model):
    __tablename__ = "players"
    id = db.Column(db.Integer, primary_key=True)
    gamertag = db.Column(db.String(64))
-   tier = db.Column(db.Integer)
-   csr = db.Column(db.Integer)
-   rank = db.Column(db.Integer)
-   playlist_id = db.Column(db.String(64), db.ForeignKey('playlists.id'))
-   playlists = db.relationship("Playlist", backref='players')
+   tier = db.Column(db.String(64))
+   csr = db.Column(db.String(64))
+   rank = db.Column(db.String(64))
 
-def get_season_data(season):
-    seasons_info = []
-    seasons_info.append(season['name'])
-    seasons_info.append(season['startDate'])
-    seasons_info.append(season['endDate'])
-    seasons_info.append(season['id'])
-    seasons_info.append(season['playlists'][0]['id'])
-    return seasons_info
+def get_or_create_season(season_name, season_id, start_date, end_date):
+    season = Arena_Season.query.filter_by(name=season_name).first()
+    if season:
+        season.start_date = start_date
+        season.season_id = season_id
+        season.end_date = end_date
+        session.add(season)
+        session.commit()
+        return season
+    else:
+        season = Arena_Season(name=season_name, season_id=season_id, start_date=start_date, end_date=end_date)
+        session.add(season)
+        session.commit()
+        return season
 
-with open('metadata_cached_data.json', 'r') as f:
-    season_metadata = json.load(f)
-with open('Season_0_Team_Arena_cached_data.json', 'r') as f:
-    season_0_leaderboard = json.load(f)
-with open('Season_1_Team_Arena_cached_data.json', 'r') as f:
-    season_1_leaderboard = json.load(f)
-with open('Season_2_Team_Arena_cached_data.json', 'r') as f:
-    season_2_leaderboard = json.load(f)
-with open('Season_3_Team_Arena_cached_data.json', 'r') as f:
-    season_3_leaderboard = json.load(f)
-with open('Season_4_Team_Arena_cached_data.json', 'r') as f:
-    season_4_leaderboard = json.load(f)
-with open('Season_5_Team_Arena_cached_data.json', 'r') as f:
-    season_5_leaderboard = json.load(f)
-with open('Season_6_Team_Arena_cached_data.json', 'r') as f:
-    season_6_leaderboard = json.load(f)
-with open('Season_7_Team_Arena_cached_data.json', 'r') as f:
-    season_7_leaderboard = json.load(f)
-with open('Season_8_Team_Arena_cached_data.json', 'r') as f:
-    season_8_leaderboard = json.load(f)
-with open('Season_9_Team_Arena_cached_data.json', 'r') as f:
-    season_9_leaderboard = json.load(f)
-with open('Season_10_Team_Arena_cached_data.json', 'r') as f:
-    season_10_leaderboard = json.load(f)
-with open('Season_11_Team_Arena_cached_data.json', 'r') as f:
-    season_11_leaderboard = json.load(f)
-with open('Season_12_Team_Arena_cached_data.json', 'r') as f:
-    season_12_leaderboard = json.load(f)
-#
-# with open
-#
-# class Season:
-#    def __init__(self, info):
-#        self.title = info[3]
-#
-#    self __str__(self):
-#        return "{}<br>".format(self.title)
-#
-#
-#
-# class Stats:
-#    def __init__(self, info):
-#        self.gamertag = info[object]
-#
-#    def __str__(self):
-#        return "{}<br>".format(self.gamertag)
-#
-# if __name__ == '__main__':
-#    db.create_all()
-# app.run()
+def get_or_create_players(player_name, tier, csr, rank, season_name):
+    player = Player.query.filter_by(gamertag=player_name).first()
+    if player:
+        player.tier = tier
+        player.csr = csr
+        player.rank = rank
+        season_dict[season_name].players.append(player)
+        session.add(player)
+        session.commit()
+        return player
+    else:
+        player = Player(gamertag=player_name, tier=tier, csr=csr, rank=rank)
+        season_dict[season_name].players.append(player)
+        session.add(player)
+        session.commit()
+        return player
+
+@app.route('/')
+def index():
+    return render_template('home_template.html')
+
+@app.route('/Seasons')
+def pull_season():
+    seasons = Arena_Season.query.all()
+    names = []
+    ids = []
+    start = []
+    end = []
+    for s in seasons:
+        names.append(s.name)
+        ids.append(s.season_id)
+        start.append(s.start_date)
+        end.append(s.end_date)
+    return render_template('seasons_template.html',names=names, ids=ids, start=start, end=end)
+
+@app.route('/Players')
+def pull_players():
+    players = Player.query.all()
+    gamertag = []
+    tier = []
+    csr = []
+    rank = []
+    season_name = []
+    for p in players:
+        gamertag.append(p.gamertag)
+        tier.append(p.tier)
+        csr.append(p.csr)
+        rank.append(p.rank)
+    return render_template('players_template.html', gamertag=gamertag, tier=tier, csr=csr, rank=rank)
+
+# load_season_data('metadata_cached_data.json')
+# load_player_data('Season_0_Team_Arena_cached_data.json')
+# load_player_data('Season_1_Team_Arena_cached_data.json')
+# load_player_data('Season_2_Team_Arena_cached_data.json')
+# load_player_data('Season_3_Team_Arena_cached_data.json')
+# load_player_data('Season_4_Team_Arena_cached_data.json')
+# load_player_data('Season_5_Team_Arena_cached_data.json')
+# load_player_data('Season_6_Team_Arena_cached_data.json')
+# load_player_data('Season_7_Team_Arena_cached_data.json')
+# load_player_data('Season_8_Team_Arena_cached_data.json')
+# load_player_data('Season_9_Team_Arena_cached_data.json')
+# load_player_data('Season_10_Team_Arena_cached_data.json')
+# load_player_data('Season_11_Team_Arena_cached_data.json')
+# load_player_data('Season_12_Team_Arena_cached_data.json')
+
+if __name__ == '__main__':
+    db.create_all()
+app.run()

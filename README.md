@@ -14,7 +14,16 @@ Nate Coryell
 
 ## Project Description
 
-This project will create a FLask application that will display information related to Halo 5 competitive seasons. The 343 Industries API will provide information about competitive seasons, playlist leaderboards, and players. This information will be loaded into a database. HTML and CSS code will format the information from these databases into tables with which usersd will be able to interact.
+This project will create a FLask application that will display information related to the video game Halo 5 competitive multiplayer seasons. The 343 Industries API provides metadata bout about competitive seasons and players. 
+
+The following information about each season has been cached: name, season id, start date, and end date. The following information about the top twenty players from each season is also cached: gamertag, tier, CSR, and rank. 
+
+This information is loaded into the database Halo5_seasons.db. The database consists of three tables, diagrammed in Final_Project_Diagram.jpg. An association table named Leaderboard connects the players in the Players table with the seasons in the Seasons table in which they are ranked.
+
+Three Flask app paths are defined and described below.
+
+
+HTML, Javascript, and CSS code link pages and format the information from the databases into tables.
 
 
 
@@ -25,8 +34,6 @@ This project will create a FLask application that will display information relat
 1. Install all requirements with `pip install -r requirements.txt
 2. Run SI507final_project.py
 
-3. Anything else
-
 
 
 ## How to use
@@ -35,24 +42,19 @@ This project will create a FLask application that will display information relat
 
 1. Navigate to the url displayed in the console.
 
-2. Explore the table
-
-3. (Optional): Markdown syntax to include an screenshot/image: ![alt text](image.jpg)
+2. Explore the options in the gray field.
+3. Selecting Seasons will display a table containing information about competitive seasons.
+4. Selecting Players will display information about players present in competitive season leaderboards.
 
 
 
 ## Routes in this application
 
 
-- `/home` -> this is the home page
+- `/` -> this is the home page
 
-- `/form` -> this route has a form for user input
-
-- `/result` -> this route is where the form sends the result...
-
-- `/newuser/<username>` -> this route also takes input of a name and shows you a greeting
-
-
+- `/Seasons` -> this route contains a table consisting of Season data
+- `/Players` -> this route contains a table consisting of Player data
 
 ## How to run tests
 
@@ -69,14 +71,35 @@ NOTE: Need not have 3 steps, but should have as many as are appropriate!
 
 
 - Final_Project
+  - SI507final_project.py
   - SI507project_tools.py
   - SI507project_tests.py
 
   - README.md
   - requirements.txt
-- File name
-
-- File name
+  - Final_Project_Diagram.jpg
+  - metadata_cached_data.json
+  - Season_0_Team_Arena_cached_data.json
+  - Season_1_Team_Arena_cached_data.json
+  - Season_2_Team_Arena_cached_data.json
+  - Season_3_Team_Arena_cached_data.json
+  - Season_4_Team_Arena_cached_data.json
+  - Season_5_Team_Arena_cached_data.json
+  - Season_6_Team_Arena_cached_data.json
+  - Season_7_Team_Arena_cached_data.json
+  - Season_8_Team_Arena_cached_data.json
+  - Season_9_Team_Arena_cached_data.json
+  - Season_10_Team_Arena_cached_data.json
+  - Season_11_Team_Arena_cached_data.json
+  - Season_12_Team_Arena_cached_data.json
+- Screenshots
+  - Homepage.jpg
+  - Players.jpg
+  - Seasons.jpg
+- templates
+  - home_template.html
+  - players_template.html
+  - seasons_template.html
 
 
 
@@ -98,37 +121,37 @@ Below is a list of the requirements listed in the rubric for you to copy and pas
 
 ### General
 
-- [ ] Project is submitted as a Github repository
+- [x] Project is submitted as a Github repository
 
-- [ ] Project includes a working Flask application that runs locally on a computer
+- [x] Project includes a working Flask application that runs locally on a computer
 
-- [ ] Project includes at least 1 test suite file with reasonable tests in it.
+- [x] Project includes at least 1 test suite file with reasonable tests in it.
 
-- [ ] Includes a `requirements.txt` file containing all required modules to run program
+- [x] Includes a `requirements.txt` file containing all required modules to run program
 
-- [ ] Includes a clear and readable README.md that follows this template
+- [x] Includes a clear and readable README.md that follows this template
 
-- [ ] Includes a sample .sqlite/.db file
+- [x] Includes a sample .sqlite/.db file
 
-- [ ] Includes a diagram of your database schema
+- [x] Includes a diagram of your database schema
 
-- [ ] Includes EVERY file needed in order to run the project
+- [x] Includes EVERY file needed in order to run the project
 
-- [ ] Includes screenshots and/or clear descriptions of what your project should look like when it is working
+- [x] Includes screenshots and/or clear descriptions of what your project should look like when it is working
 
 
 
 ### Flask Application
 
-- [ ] Includes at least 3 different routes
+- [x] Includes at least 3 different routes
 
-- [ ] View/s a user can see when the application runs that are understandable/legible for someone who has NOT taken this course
+- [x] View/s a user can see when the application runs that are understandable/legible for someone who has NOT taken this course
 
-- [ ] Interactions with a database that has at least 2 tables
+- [x] Interactions with a database that has at least 2 tables
 
-- [ ] At least 1 relationship between 2 tables in database
+- [x] At least 1 relationship between 2 tables in database
 
-- [ ] Information stored in the database is viewed or interacted with in some way
+- [x] Information stored in the database is viewed or interacted with in some way
 
 
 
@@ -140,23 +163,23 @@ Below is a list of the requirements listed in the rubric for you to copy and pas
 
 - [ ] Object definitions using inheritance (indicate if this counts for 2 or 3 of the six requirements in a parenthetical)
 
-- [ ] A many-to-many relationship in your database structure
+- [x] A many-to-many relationship in your database structure
 
 - [ ] At least one form in your Flask application
 
-- [ ] Templating in your Flask application
+- [x] Templating in your Flask application
 
-- [ ] Inclusion of JavaScript files in the application
+- [x] Inclusion of JavaScript files in the application
 
-- [ ] Links in the views of Flask application page/s
+- [x] Links in the views of Flask application page/s
 
 - [ ] Relevant use of `itertools` and/or `collections`
 
 - [ ] Sourcing of data using web scraping
 
-- [ ] Sourcing of data using web REST API requests
+- [x] Sourcing of data using web REST API requests
 
-- [ ] Sourcing of data using user input and/or a downloaded .csv or .json dataset
+- [x] Sourcing of data using user input and/or a downloaded .csv or .json dataset
 
 - [ ] Caching of data you continually retrieve from the internet in some way
 
