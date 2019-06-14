@@ -1,0 +1,23 @@
+<style>
+  table, th, td {
+  border: 1px solid black;
+}
+</style>
+<table
+  style="width:100%">
+<tr>
+  <th>Name</th>
+  <th>Season ID</th>
+  <th>Start Date</th>
+  <th>End Date</th>
+  </tr>
+
+{% for x in names %}
+<tr>
+  <td>{{ names[loop.index] }}</td>
+  <td>{{ ids[loop.index] }}</td>
+  <td>{{ start[loop.index] }}</td>
+  <td>{{ end[loop.index] }}</td>
+</tr>
+{% endfor %}
+</table>

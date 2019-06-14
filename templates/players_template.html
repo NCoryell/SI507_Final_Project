@@ -1,0 +1,23 @@
+<style>
+  table, th, td {
+  border: 1px solid black;
+}
+</style>
+<table
+  style="width:100%">
+<tr>
+  <th>Gamertag</th>
+  <th>Tier</th>
+  <th>CSR</th>
+  <th>Rank</th>
+  </tr>
+
+{% for x in gamertag %}
+<tr>
+  <td>{{ gamertag[loop.index] }}</td>
+  <td>{{ tier[loop.index] }}</td>
+  <td>{{ csr[loop.index] }}</td>
+  <td>{{ rank[loop.index] }}</td>
+</tr>
+{% endfor %}
+</table>

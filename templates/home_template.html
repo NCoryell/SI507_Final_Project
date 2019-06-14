@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1> Welcome to the Halo 5 Arena Statistics Page </h1>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+<script type="text/javascript">
+	function displayInformation () {
+		document.querySelector('h1').innerHTML = "Welcome to the Halo 5 Arena Statistics Page";
+		var body = document.querySelector('body')
+		body.style.background = "#FFFAFA";
+		body.style.margin = "20%";
+	}
+</script>
+<style>
+p{
+	background-color: #708090;
+	border: 3px solid #000000;
+	padding: 3%;
+	font-size: 2.0em;
+	line-height: 1.5;
+  text-align: center;
+}
+</style>
+</head>
+<body onload = "displayInformation();">
+	<h2>Select the list of Seasons or the list of Players:</h2>
+	<p>
+    <a href="/Seasons">Seasons</a><br/>
+    <a href="/Players">Players</a>
+  </p>
+
+</body>
+</html>
